@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alethia Architecture Engine™</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Barlow+Condensed:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --navy: #0F1B2E;
+    --navy-mid: #162236;
+    --navy-light: #1E2F45;
+    --navy-border: #243550;
+    --gold: #C9A84C;
+    --gold-light: #E2C47A;
+    --gold-dim: rgba(201,168,76,0.15);
+    --gold-dim2: rgba(201,168,76,0.08);
+    --white: #F5F1EA;
+    --white-dim: rgba(245,241,234,0.7);
+    --white-faint: rgba(245,241,234,0.35);
+    --red: #C0392B;
+    --green: #27AE60;
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-condensed: 'Barlow Condensed', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--navy-mid);
+    border-bottom: 1px solid var(--navy-border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-left { display: flex; align-items: center; gap: 16px; }
+
+  .logo-mark {
+    width: 40px; height: 40px;
+    border: 1px solid var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+
+  .header-title {
+    font-family: var(--font-condensed);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--white-dim);
+  }
+
+  .header-subtitle {
+    font-family: var(--font-display);
+    font-size: 20px;
+    color: var(--white);
+    font-style: italic;
+  }
+
+  .engine-badge {
+    font-family: var(--font-condensed);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--gold-dim);
+    padding: 4px 12px;
+    background: var(--gold-dim2);
+  }
+
+  /* LAYOUT */
+  .layout {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    min-height: calc(100vh - 73px);
+  }
+
+  /* LEFT PANEL - INPUTS */
+  .inputs-panel {
+    background: var(--navy-mid);
+    border-right: 1px solid var(--navy-border);
+    overflow-y: auto;
+    height: calc(100vh - 73px);
+    position: sticky;
+    top: 73px;
+  }
+
+  .panel-section {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--navy-border);
+  }
+
+  .panel-section:last-child { border-bottom: none; }
+
+  .section-label {
+    font-family: var(--font-condensed);
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 16px;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .section-desc {
+    font-size: 12px;
+    color: var(--white-faint);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+
+  textarea {
+    width: 100%;
+    background: var(--navy);
+    border: 1px solid var(--navy-border);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 12px;
+    line-height: 1.6;
+    padding: 10px 12px;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  textarea:focus { border-color: var(--gold); }
+  textarea::placeholder { color: var(--white-faint); }
+
+  .input-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--white-faint);
+    font-family: var(--font-condensed);
+    letter-spacing: 1px;
+  }
+
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--navy-border);
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+
+  .status-dot.active { background: var(--gold); }
+  .status-dot.empty { background: var(--navy-border); }
+
+  .optional-tag {
+    font-family: var(--font-condensed);
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--white-faint);
+    border: 1px solid var(--navy-border);
+    padding: 1px 6px;
+    margin-left: 8px;
+  }
+
+  /* CLIENT INFO */
+  .client-fields { display: flex; flex-direction: column; gap: 8px; }
+
+  input[type="text"] {
+    width: 100%;
+    background: var(--navy);
+    border: 1px solid var(--navy-border);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 13px;
+    padding: 8px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus { border-color: var(--gold); }
+  input[type="text"]::placeholder { color: var(--white-faint); }
+
+  /* GENERATE CONTROLS */
+  .generate-section {
+    padding: 20px 24px;
+    background: var(--navy-mid);
+    border-top: 1px solid var(--navy-border);
+    position: sticky;
+    bottom: 0;
+  }
+
+  .generate-all-btn {
+    width: 100%;
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    font-family: var(--font-condensed);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 14px;
+    cursor: pointer;
+    transition: background 0.2s, opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .generate-all-btn:hover:not(:disabled) { background: var(--gold-light); }
+  .generate-all-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .generate-note {
+    font-size: 11px;
+    color: var(--white-faint);
+    text-align: center;
+    margin-top: 8px;
+    font-family: var(--font-condensed);
+    letter-spacing: 1px;
+  }
+
+  /* RIGHT PANEL - OUTPUTS */
+  .outputs-panel {
+    overflow-y: auto;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* ARCHITECT'S BRIEF */
+  .architects-brief {
+    background: var(--gold-dim2);
+    border: 1px solid var(--gold);
+    padding: 24px;
+    position: relative;
+  }
+
+  .brief-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .brief-eyebrow {
+    font-family: var(--font-condensed);
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .brief-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--white);
+    font-style: italic;
+  }
+
+  .internal-badge {
+    font-family: var(--font-condensed);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--navy);
+    background: var(--gold);
+    padding: 3px 10px;
+  }
+
+  /* DELIVERABLE CARDS */
+  .deliverable-card {
+    background: var(--navy-light);
+    border: 1px solid var(--navy-border);
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--navy-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--navy-mid);
+  }
+
+  .card-header-left { display: flex; align-items: center; gap: 12px; }
+
+  .card-number {
+    font-family: var(--font-display);
+    font-size: 28px;
+    color: var(--gold);
+    line-height: 1;
+    opacity: 0.6;
+  }
+
+  .card-meta { display: flex; flex-direction: column; gap: 2px; }
+
+  .card-eyebrow {
+    font-family: var(--font-condensed);
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--white);
+  }
+
+  .card-actions { display: flex; gap: 8px; align-items: center; }
+
+  .gen-btn {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-family: var(--font-condensed);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .gen-btn:hover:not(:disabled) {
+    background: var(--gold);
+    color: var(--navy);
+  }
+
+  .gen-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .copy-btn {
+    background: transparent;
+    border: 1px solid var(--navy-border);
+    color: var(--white-dim);
+    font-family: var(--font-condensed);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover { border-color: var(--white-dim); }
+
+  .card-body { padding: 24px; }
+
+  .output-placeholder {
+    font-size: 13px;
+    color: var(--white-faint);
+    font-style: italic;
+    text-align: center;
+    padding: 32px 0;
+    font-family: var(--font-display);
+  }
+
+  .output-content {
+    font-size: 13px;
+    color: var(--white);
+    line-height: 1.8;
+    white-space: pre-wrap;
+    font-family: var(--font-body);
+    display: none;
+  }
+
+  .output-content.visible { display: block; }
+
+  /* LOADING STATE */
+  .loading-state {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 0;
+    justify-content: center;
+  }
+
+  .loading-state.visible { display: flex; }
+
+  .loading-dots {
+    display: flex;
+    gap: 4px;
+  }
+
+  .loading-dot {
+    width: 6px; height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+
+  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes pulse {
+    0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1); }
+  }
+
+  .loading-text {
+    font-family: var(--font-condensed);
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  /* STATUS BAR */
+  .status-bar {
+    background: var(--navy-mid);
+    border: 1px solid var(--navy-border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .status-left {
+    font-family: var(--font-condensed);
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--white-faint);
+    text-transform: uppercase;
+  }
+
+  .status-right {
+    font-family: var(--font-condensed);
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--gold);
+  }
+
+  /* DIVIDER */
+  .gold-rule {
+    border: none;
+    border-top: 1px solid var(--gold-dim);
+    margin: 8px 0;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--navy); }
+  ::-webkit-scrollbar-thumb { background: var(--navy-border); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+  /* ERROR */
+  .error-msg {
+    background: rgba(192,57,43,0.1);
+    border: 1px solid rgba(192,57,43,0.4);
+    color: #E74C3C;
+    font-family: var(--font-condensed);
+    font-size: 12px;
+    letter-spacing: 1px;
+    padding: 10px 16px;
+    margin-top: 8px;
+    display: none;
+  }
+
+  .error-msg.visible { display: block; }
+
+  /* COPY SUCCESS */
+  .copy-success {
+    font-family: var(--font-condensed);
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--green);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .copy-success.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <div class="logo-mark">A</div>
+    <div>
+      <div class="header-title">Alethia · Truth Unhidden</div>
+      <div class="header-subtitle">Architecture Engine™</div>
+    </div>
+  </div>
+  <div class="engine-badge">Version 1.0 · Senior Review Required</div>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT: INPUTS -->
+  <div class="inputs-panel">
+
+    <div class="panel-section">
+      <div class="section-label">Client</div>
+      <div class="section-title">Engagement Context</div>
+      <div class="section-desc">Identify the founder and company before generating.</div>
+      <div class="client-fields">
+        <input type="text" id="clientName" placeholder="Company name" oninput="updateStatus()">
+        <input type="text" id="founderName" placeholder="Founder name(s)" oninput="updateStatus()">
+        <input type="text" id="currentRevenue" placeholder="Current revenue (estimated)" oninput="updateStatus()">
+        <input type="text" id="sessionDate" placeholder="Session date" oninput="updateStatus()">
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <div class="section-label">Primary Input · Required</div>
+      <div class="section-title">Founder Architecture Session</div>
+      <div class="section-desc">Paste the full Fathom transcript. This is the engine's primary fuel source.</div>
+      <textarea id="transcript" rows="10" placeholder="Paste session transcript here...&#10;&#10;Include the full conversation. The engine reads for: dream state, primary frustrations, founder dependency signals, team capacity, values, what breaks next, and the Architect's Verdict inputs." oninput="updateInputStatus('transcriptStatus', this.value)"></textarea>
+      <div class="input-status">
+        <div class="status-dot" id="transcriptStatus"></div>
+        <span>TRANSCRIPT</span>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <div class="section-label">Secondary Input · Recommended</div>
+      <div class="section-title">Founder Pre-Work</div>
+      <div class="section-desc">Business model docs, financial models, operating flowcharts, or any materials the founder submitted before the session.</div>
+      <textarea id="prework" rows="6" placeholder="Paste or summarize founder pre-work here...&#10;&#10;Include revenue models, division structures, strategic plans, or any business documentation submitted." oninput="updateInputStatus('preworkStatus', this.value)"></textarea>
+      <div class="input-status">
+        <div class="status-dot" id="preworkStatus"></div>
+        <span>PRE-WORK</span>
+        <span class="optional-tag">OPTIONAL</span>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <div class="section-label">Tertiary Input · When Available</div>
+      <div class="section-title">EAR Report</div>
+      <div class="section-desc">Paste key findings from the Execution Authority Signal Report. Sparse for smaller ICP clients — include what exists.</div>
+      <textarea id="ear" rows="5" placeholder="Paste EAR signal summary here...&#10;&#10;Include: Strategic Signal, Structural Signal, Operational Signal, Delivery Signal, cascade risk ratings, and Truth Underneath statements." oninput="updateInputStatus('earStatus', this.value)"></textarea>
+      <div class="input-status">
+        <div class="status-dot" id="earStatus"></div>
+        <span>EAR REPORT</span>
+        <span class="optional-tag">OPTIONAL</span>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <div class="section-label">Future Input · Coming Soon</div>
+      <div class="section-title">Digital Twin</div>
+      <div class="section-desc">Internal operational model. Leave blank until format is confirmed — the engine runs without it.</div>
+      <textarea id="digitalTwin" rows="4" placeholder="Digital Twin input coming soon...&#10;&#10;Leave blank for now. Engine operates on three primary inputs." oninput="updateInputStatus('digitalTwinStatus', this.value)" style="opacity:0.5;"></textarea>
+      <div class="input-status">
+        <div class="status-dot" id="digitalTwinStatus"></div>
+        <span>DIGITAL TWIN</span>
+        <span class="optional-tag">PENDING</span>
+      </div>
+    </div>
+
+    <div class="generate-section">
+      <button class="generate-all-btn" id="generateAllBtn" onclick="generateAll()">
+        <span>▶</span>
+        Generate All Deliverables
+      </button>
+      <div class="generate-note">Senior architect review required before client delivery</div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: OUTPUTS -->
+  <div class="outputs-panel">
+
+    <!-- STATUS BAR -->
+    <div class="status-bar">
+      <div class="status-left" id="statusLeft">Awaiting inputs — paste transcript to begin</div>
+      <div class="status-right" id="statusRight">0 / 6 generated</div>
+    </div>
+
+    <!-- ARCHITECT'S BRIEF -->
+    <div class="architects-brief">
+      <div class="brief-header">
+        <div>
+          <div class="brief-eyebrow">Internal Only · Not for Client Distribution</div>
+          <div class="brief-title">Architect's Brief™</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="copy-success" id="briefCopySuccess">Copied</span>
+          <button class="copy-btn" onclick="copyOutput('briefContent', 'briefCopySuccess')">Copy</button>
+          <button class="gen-btn" id="briefGenBtn" onclick="generateDeliverable('brief')">Generate</button>
+          <div class="internal-badge">INTERNAL</div>
+        </div>
+      </div>
+      <hr class="gold-rule">
+      <div class="loading-state" id="briefLoading">
+        <div class="loading-dots">
+          <div class="loading-dot"></div>
+          <div class="loading-dot"></div>
+          <div class="loading-dot"></div>
+        </div>
+        <div class="loading-text">Reading the signals...</div>
+      </div>
+      <div class="output-placeholder" id="briefPlaceholder">Primary constraint. First Fix. Three probes for Travis. Generated first.</div>
+      <div class="output-content" id="briefContent"></div>
+      <div class="error-msg" id="briefError"></div>
+    </div>
+
+    <!-- DELIVERABLE 1: SIGNAL DX -->
+    <div class="deliverable-card">
+      <div class="card-header">
+        <div class="card-header-left">
+          <div class="card-number">01</div>
+          <div class="card-meta">
+            <div class="card-eyebrow">Section 1 · Deliverable One</div>
+            <div class="card-title">Signal DX™</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <span class="copy-success" id="dx1CopySuccess">Copied</span>
+          <button class="copy-btn" onclick="copyOutput('dx1Content', 'dx1CopySuccess')">Copy</button>
+          <button class="gen-btn" id="dx1GenBtn" onclick="generateDeliverable('dx1')">Generate</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="loading-state" id="dx1Loading">
+          <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
+          <div class="loading-text">Diagnosing the enterprise...</div>
+        </div>
+        <div class="output-placeholder" id="dx1Placeholder">Enterprise diagnostic. Strengths, constraints, founder dependency, preliminary diagnosis.</div>
+        <div class="output-content" id="dx1Content"></div>
+        <div class="error-msg" id="dx1Error"></div>
+      </div>
+    </div>
+
+    <!-- DELIVERABLE 2: STRATEGIC BLUEPRINT -->
+    <div class="deliverable-card">
+      <div class="card-header">
+        <div class="card-header-left">
+          <div class="card-number">02</div>
+          <div class="card-meta">
+            <div class="card-eyebrow">Section 1 · Deliverable Two</div>
+            <div class="card-title">Strategic Blueprint™</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <span class="copy-success" id="dx2CopySuccess">Copied</span>
+          <button class="copy-btn" onclick="copyOutput('dx2Content', 'dx2CopySuccess')">Copy</button>
+          <button class="gen-btn" id="dx2GenBtn" onclick="generateDeliverable('dx2')">Generate</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="loading-state" id="dx2Loading">
+          <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
+          <div class="loading-text">Building the roadmap...</div>
+        </div>
+        <div class="output-placeholder" id="dx2Placeholder">Two-page roadmap. Vision, values, 3-year picture, 1-year targets, 90-day priorities.</div>
+        <div class="output-content" id="dx2Content"></div>
+        <div class="error-msg" id="dx2Error"></div>
+      </div>
+    </div>
+
+    <!-- DELIVERABLE 3: GROWTH CONSTRAINT MAP -->
+    <div class="deliverable-card">
+      <div class="card-header">
+        <div class="card-header-left">
+          <div class="card-number">03</div>
+          <div class="card-meta">
+            <div class="card-eyebrow">Section 1 · Deliverable Three</div>
+            <div class="card-title">Growth Constraint Map™</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <span class="copy-success" id="dx3CopySuccess">Copied</span>
+          <button class="copy-btn" onclick="copyOutput('dx3Content', 'dx3CopySuccess')">Copy</button>
+          <button class="gen-btn" id="dx3GenBtn" onclick="generateDeliverable('dx3')">Generate</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="loading-state" id="dx3Loading">
+          <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
+          <div class="loading-text">Mapping the constraints...</div>
+        </div>
+        <div class="output-placeholder" id="dx3Placeholder">Constraint hierarchy. Primary, secondary, tertiary. What Breaks Next™. First Fix™.</div>
+        <div class="output-content" id="dx3Content"></div>
+        <div class="error-msg" id="dx3Error"></div>
+      </div>
+    </div>
+
+    <!-- DELIVERABLE 4: EXECUTIVE ARCHITECTURE PLAN -->
+    <div class="deliverable-card">
+      <div class="card-header">
+        <div class="card-header-left">
+          <div class="card-number">04</div>
+          <div class="card-meta">
+            <div class="card-eyebrow">Section 1 · Deliverable Four</div>
+            <div class="card-title">Executive Architecture Plan™</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <span class="copy-success" id="dx4CopySuccess">Copied</span>
+          <button class="copy-btn" onclick="copyOutput('dx4Content', 'dx4CopySuccess')">Copy</button>
+          <button class="gen-btn" id="dx4GenBtn" onclick="generateDeliverable('dx4')">Generate</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="loading-state" id="dx4Loading">
+          <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
+          <div class="loading-text">Designing the architecture...</div>
+        </div>
+        <div class="output-placeholder" id="dx4Placeholder">10-page playbook. Leadership, revenue, delivery, technology, organizational, knowledge architecture. Sequence of build.</div>
+        <div class="output-content" id="dx4Content"></div>
+        <div class="error-msg" id="dx4Error"></div>
+      </div>
+    </div>
+
+    <!-- DELIVERABLE 5: 90-DAY LIBERATION ROADMAP -->
+    <div class="deliverable-card">
+      <div class="card-header">
+        <div class="card-header-left">
+          <div class="card-number">05</div>
+          <div class="card-meta">
+            <div class="card-eyebrow">Section 1 · Deliverable Five</div>
+            <div class="card-title">90-Day Liberation Roadmap™</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <span class="copy-success" id="dx5CopySuccess">Copied</span>
+          <button class="copy-btn" onclick="copyOutput('dx5Content', 'dx5CopySuccess')">Copy</button>
+          <button class="gen-btn" id="dx5GenBtn" onclick="generateDeliverable('dx5')">Generate</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="loading-state" id="dx5Loading">
+          <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
+          <div class="loading-text">Building the roadmap...</div>
+        </div>
+        <div class="output-placeholder" id="dx5Placeholder">Five phases. Priorities, sequence, quick wins, risks, what will not be built. Liberation statement.</div>
+        <div class="output-content" id="dx5Content"></div>
+        <div class="error-msg" id="dx5Error"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let generatedCount = 0;
+const DELIVERABLES = ['brief','dx1','dx2','dx3','dx4','dx5'];
+
+// ─── INPUT STATUS ─────────────────────────────────────────────────────────────
+function updateInputStatus(dotId, value) {
+  const dot = document.getElementById(dotId);
+  if (value && value.trim().length > 20) {
+    dot.className = 'status-dot active';
+  } else {
+    dot.className = 'status-dot empty';
+  }
+  updateStatus();
+}
+
+function updateStatus() {
+  const transcript = document.getElementById('transcript').value.trim();
+  const clientName = document.getElementById('clientName').value.trim();
+  const btn = document.getElementById('generateAllBtn');
+  const statusLeft = document.getElementById('statusLeft');
+
+  if (transcript.length > 50) {
+    btn.disabled = false;
+    statusLeft.textContent = clientName
+      ? `${clientName} · Ready to generate`
+      : 'Transcript loaded · Ready to generate';
+  } else {
+    btn.disabled = true;
+    statusLeft.textContent = 'Awaiting transcript — primary input required';
+  }
+}
+
+// ─── BUILD CONTEXT ────────────────────────────────────────────────────────────
+function buildContext() {
+  const client = document.getElementById('clientName').value.trim() || 'the company';
+  const founder = document.getElementById('founderName').value.trim() || 'the founder';
+  const revenue = document.getElementById('currentRevenue').value.trim() || 'not specified';
+  const date = document.getElementById('sessionDate').value.trim() || 'recent';
+  const transcript = document.getElementById('transcript').value.trim();
+  const prework = document.getElementById('prework').value.trim();
+  const ear = document.getElementById('ear').value.trim();
+  const twin = document.getElementById('digitalTwin').value.trim();
+
+  let context = `ENGAGEMENT CONTEXT
+Company: ${client}
+Founder(s): ${founder}
+Current Revenue: ${revenue}
+Session Date: ${date}
+
+`;
+
+  context += `FOUNDER ARCHITECTURE SESSION TRANSCRIPT
+${transcript}
+
+`;
+
+  if (prework) context += `FOUNDER PRE-WORK & SUBMITTED MATERIALS
+${prework}
+
+`;
+
+  if (ear) context += `EXECUTION AUTHORITY SIGNAL REPORT (EAR)
+${ear}
+
+`;
+
+  if (twin) context += `DIGITAL TWIN
+${twin}
+
+`;
+
+  return context;
+}
+
+// ─── PROMPTS ──────────────────────────────────────────────────────────────────
+function getPrompt(type, context) {
+  const client = document.getElementById('clientName').value.trim() || 'the company';
+  const founder = document.getElementById('founderName').value.trim() || 'the founder';
+
+  const voiceInstruction = `
+VOICE & STYLE RULES — NON-NEGOTIABLE:
+- Short declarative sentences. Period. No em dashes anywhere.
+- Travis Roderick's rhythm: sparse, direct, carries weight.
+- Use Alethia trademark language: Signal DX™, Growth Constraint Map™, What Breaks Next™, First Fix™, Founder Liberation Sprint™, Strategic Blueprint™, Executive Architecture Plan™, Fracture Point™, Founder Dependency™.
+- Hope without sentimentality. Truth without cruelty.
+- Never use consulting language. Write like a builder talking to a builder.
+- Section headers in ALL CAPS. Body in clean prose or short declaratives.
+- End documents with a creed-style statement. Short. Lands without explanation.
+- No bullet points for emotional content. Bullets only for structured lists.
+`;
+
+  const prompts = {
+
+    brief: `${voiceInstruction}
+
+You are the Alethia Architecture Engine. You have just completed a Founder Architecture Session with ${founder} of ${client}. This is an INTERNAL document for senior architects Travis Roderick and Joe Pung only. It is never shared with the client.
+
+${context}
+
+Generate the ARCHITECT'S BRIEF™ — a tight internal one-pager with exactly these four sections:
+
+PRIMARY CONSTRAINT
+One sentence. The single thing holding this company back most. Not symptoms. The root.
+
+FIRST FIX™
+One sentence. The first domino. What gets installed first and why it unlocks everything else.
+
+WHAT BREAKS NEXT™ IF NOTHING CHANGES
+Three specific predictions. Numbered. Each one sentence. Based on what you heard in the session.
+
+THREE PROBES FOR TRAVIS — SESSION ONE
+Three questions Travis should ask in the first Trials and Tribulations session. These go beneath what was said in the Architecture Session. Name what the founder didn't quite say but was circling around. Each question one sentence.
+
+Keep the entire brief under 400 words. This is a tool. Not a report.`,
+
+    dx1: `${voiceInstruction}
+
+You are the Alethia Architecture Engine generating the Signal DX™ for ${client}.
+
+${context}
+
+Generate the SIGNAL DX™ — a comprehensive enterprise diagnostic. This is a client-facing deliverable. It must be honest, direct, and leave the founder feeling seen rather than managed.
+
+Structure it exactly as follows:
+
+ENTERPRISE OVERVIEW
+2-3 paragraphs. What this company is, what stage it is in, what the founders are building toward. Name the partnership dynamic if it is a strength. Use their actual words and specifics from the session.
+
+STRENGTHS
+Each strength as a bold header followed by 2-3 sentences of specific evidence. Minimum five strengths. Draw from actual things said and observed. Not generic.
+
+CONSTRAINTS
+Each constraint as a bold header followed by 2-3 sentences. Name the primary constraint first. Be specific. Name names where appropriate (systems, people, structures).
+
+FOUNDER DEPENDENCY ASSESSMENT
+One focused section. How dependent is this company on the founder's personal presence, relationships, and decisions? What specifically breaks without them? Rate it: Low / Moderate / High / Critical. Justify the rating in 2-3 sentences.
+
+PRELIMINARY DIAGNOSIS
+The truth underneath. 2-3 paragraphs. What is actually happening here beneath the surface. Connect strengths to constraints. Identify the central tension. End with what becomes possible if the primary constraint is solved.
+
+ARCHITECT'S OBSERVATION
+One paragraph. Travis's voice. Direct address to the founder. What you see that they may not see about themselves. Honest. Not harsh. Leave them with hope and clarity simultaneously.`,
+
+    dx2: `${voiceInstruction}
+
+You are the Alethia Architecture Engine generating the Strategic Blueprint™ for ${client}.
+
+${context}
+
+Generate the STRATEGIC BLUEPRINT™ — a two-page strategic roadmap. This is the document the founders will read to their spouses and post on the wall. Every word must earn its place.
+
+Structure exactly as follows:
+
+PURPOSE
+WHY WE EXIST
+One sentence. The reason this company exists beyond making money. Use their actual language from the session.
+
+CORE VALUES
+Five values maximum. Each as a bold header. One sentence definition beneath each. Use words they actually used. Not generic business values.
+
+THREE-YEAR PICTURE
+Revenue Target: [specific number from session]
+Future Date: [three years from session date]
+
+Write three short paragraphs:
+- What the market looks like
+- What the organization looks like
+- What success looks like personally for the founders
+
+ONE-YEAR TARGETS
+Five numbered priorities. Each as a bold header with 2-3 sentences of specifics. These must be concrete and actionable. Draw directly from what they said matters most.
+
+TOP PRIORITIES (90 DAYS)
+Five numbered priorities. These are rocks. Specific. Owned. Executable in 90 days. Assign an owner where roles are clear.
+
+FOUNDER FUTURE ROLES
+One section per founder. Bold header with their name and future title. 3-4 sentences on what they own, what they stop doing, what they become.
+
+THE PROMISE
+Four lines. Short declaratives. What this company promises to every client. End with one line about what that promise builds over time.`,
+
+    dx3: `${voiceInstruction}
+
+You are the Alethia Architecture Engine generating the Growth Constraint Map™ for ${client}.
+
+${context}
+
+Generate the GROWTH CONSTRAINT MAP™ — the honest diagnosis of what is strangling growth. This document must be undeniable. The founder should read it and feel understood, not diagnosed.
+
+Structure exactly as follows:
+
+CURRENT STAGE
+Bold stage name (Startup / Early Growth / Founder Dependency / Fracture Point™ / Systemization / Scale)
+One paragraph. Describe the stage in plain language. Use specifics from their situation.
+
+PRIMARY CONSTRAINT
+Bold header. 2-3 paragraphs. The single factor holding back growth most. Root cause, not symptom. Be specific. Name the structural reality.
+
+SECONDARY CONSTRAINT
+Bold header. 2-3 paragraphs. The second most significant constraint. How it feeds the primary.
+
+WHAT BREAKS NEXT™
+A table or structured list of what fails first if revenue doubles tomorrow without structural change. Five specific failure points. Each one sentence on what breaks and why.
+
+FOUNDER DEPENDENCY
+Rate: Critical / High / Moderate / Low
+Paragraph on the specific ways the business depends on the founder's personal presence, decisions, and relationships. Name the specific roles they are still playing that they should not be.
+
+FIRST FIX™
+One section. Bold header. What gets solved first. Why this specific fix unlocks the others. What the next 90 days must prioritize.
+
+THE CENTRAL TRUTH
+Four to six short declarative sentences. The truth underneath the symptoms. The real diagnosis. End with one line about what becomes possible when the constraint is solved.`,
+
+    dx4: `${voiceInstruction}
+
+You are the Alethia Architecture Engine generating the Executive Architecture Plan™ for ${client}.
+
+${context}
+
+Generate the EXECUTIVE ARCHITECTURE PLAN™ — the 8-10 page playbook that defines the enterprise being built. This is the most comprehensive deliverable. Every section must be specific to this company.
+
+Structure exactly as follows:
+
+EXECUTIVE SUMMARY
+The company is not suffering from [name what is not the problem]. It has reached a stage where [name the real issue]. The objective is not [what they might think]. The objective is [the real objective]. 3-4 short declarative paragraphs.
+
+CURRENT STATE ASSESSMENT
+STRENGTHS — Table format. Five or more rows. Strength name | Specific evidence from session.
+CONSTRAINTS — Table format. Four or more rows. Constraint name | Specific impact.
+
+FUTURE STATE VISION
+12 months — Specific revenue, organizational state, what founders are doing.
+Three years — Revenue target, organizational design, market position.
+Five years — Legacy vision. What this company becomes.
+
+LEADERSHIP ARCHITECTURE
+One section per founder. Future role. Specific accountabilities. What they stop doing. Development priority.
+Future Leadership Bench — Who gets hired and when as the company scales.
+Decision Rights — What decisions belong to whom.
+
+REVENUE ARCHITECTURE
+Demand generation channels specific to this company. Lead channels ranked by priority. Partnership model. Pipeline design.
+
+DELIVERY ARCHITECTURE
+How the work gets done. Project management approach. Quality control. Customer experience standards. Key sub-trade or vendor relationships and how to evolve them.
+
+OPERATING MODEL
+Division or service line structure if applicable. Margin profiles. Volume strategy. What they focus on and what they stop doing.
+
+TECHNOLOGY ARCHITECTURE
+What exists and is underutilized. What gets activated first. What gets built. No new software before existing tools are maximized.
+
+ORGANIZATIONAL ARCHITECTURE
+Near-term structure. Future structure. Key seats to fill and in what sequence.
+
+SEQUENCE OF BUILD
+Phase 1 — What gets built first and why.
+Phase 2 — What follows.
+Phase 3 — What comes after that.
+
+ARCHITECT'S OBSERVATION
+The closing statement. Direct. Personal. What the architect sees that the founder may not see. What becomes possible. One paragraph. Travis's voice.`,
+
+    dx5: `${voiceInstruction}
+
+You are the Alethia Architecture Engine generating the 90-Day Liberation Roadmap™ for ${client}.
+
+${context}
+
+Generate the 90-DAY LIBERATION ROADMAP™ — the executable plan for the next 90 days. This is not a wishlist. It is a sequence. Install the machine. Build the foundation. Create oxygen.
+
+Structure exactly as follows:
+
+PURPOSE
+Three short lines. What these 90 days exist to accomplish.
+
+MUST-WIN OUTCOMES
+At the end of 90 days, the company will have:
+Five specific outcomes. Short. Declarative. Measurable.
+
+PHASE I — [Name it specifically for this company]
+Owner: [Specific name]
+Objectives: Specific list
+Success Looks Like: One sentence.
+
+PHASE II — [Name it specifically for this company]
+Owner: [Specific name]
+Objectives: Specific list
+Success Looks Like: One sentence.
+
+PHASE III — [Name it specifically for this company]
+Owner: [Specific name]
+Objectives: Specific list
+Success Looks Like: One sentence.
+
+PHASE IV — [Name it specifically for this company]
+Owner: [Specific name]
+Objectives: Specific list
+Success Looks Like: One sentence.
+
+PHASE V — [Name it specifically for this company]
+Owner: [Specific name]
+Objectives: Specific list
+Success Looks Like: One sentence.
+
+QUICK WINS
+Five things that can be done in the first two weeks. Named specifically. Not generic.
+
+RISKS
+What could derail these 90 days. Three to five specific risks named honestly.
+
+WHAT WILL NOT BE BUILT
+This is as important as what will be built. Name four to five things that will not be done in these 90 days. This protects focus.
+
+LIBERATION STATEMENT
+The objective of the next 90 days is not to build a larger business.
+The objective is to build a better business.
+[One more sentence specific to this company's situation.]
+Growth will follow.`
+  };
+
+  return prompts[type];
+}
+
+// ─── API CALL ─────────────────────────────────────────────────────────────────
+async function callClaude(prompt) {
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.error?.message || 'API error');
+  }
+
+  const data = await response.json();
+  return data.content?.[0]?.text || '';
+}
+
+// ─── GENERATE SINGLE ─────────────────────────────────────────────────────────
+async function generateDeliverable(type) {
+  const transcript = document.getElementById('transcript').value.trim();
+  if (!transcript) {
+    alert('Paste the session transcript before generating.');
+    return;
+  }
+
+  const context = buildContext();
+  const prompt = getPrompt(type, context);
+
+  const loadingEl = document.getElementById(`${type}Loading`);
+  const placeholderEl = document.getElementById(`${type}Placeholder`);
+  const contentEl = document.getElementById(`${type}Content`);
+  const errorEl = document.getElementById(`${type}Error`);
+  const genBtn = document.getElementById(`${type}GenBtn`);
+
+  loadingEl.className = 'loading-state visible';
+  placeholderEl.style.display = 'none';
+  contentEl.className = 'output-content';
+  errorEl.className = 'error-msg';
+  genBtn.disabled = true;
+  genBtn.textContent = '...';
+
+  try {
+    const result = await callClaude(prompt);
+    contentEl.textContent = result;
+    contentEl.className = 'output-content visible';
+    loadingEl.className = 'loading-state';
+    generatedCount++;
+    updateGeneratedCount();
+    genBtn.textContent = 'Regenerate';
+  } catch (err) {
+    errorEl.textContent = `Generation failed: ${err.message}`;
+    errorEl.className = 'error-msg visible';
+    loadingEl.className = 'loading-state';
+    placeholderEl.style.display = 'block';
+    genBtn.textContent = 'Retry';
+  } finally {
+    genBtn.disabled = false;
+  }
+}
+
+// ─── GENERATE ALL ────────────────────────────────────────────────────────────
+async function generateAll() {
+  generatedCount = 0;
+  updateGeneratedCount();
+
+  const btn = document.getElementById('generateAllBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span>⟳</span> Generating all deliverables...';
+
+  for (const type of DELIVERABLES) {
+    await generateDeliverable(type);
+    await new Promise(r => setTimeout(r, 800));
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<span>▶</span> Generate All Deliverables';
+
+  document.getElementById('statusLeft').textContent = 'All deliverables generated — senior review required before delivery';
+}
+
+// ─── COPY OUTPUT ──────────────────────────────────────────────────────────────
+function copyOutput(contentId, successId) {
+  const content = document.getElementById(contentId);
+  if (!content.textContent.trim()) return;
+
+  navigator.clipboard.writeText(content.textContent).then(() => {
+    const successEl = document.getElementById(successId);
+    successEl.className = 'copy-success show';
+    setTimeout(() => successEl.className = 'copy-success', 2000);
+  });
+}
+
+// ─── COUNT ────────────────────────────────────────────────────────────────────
+function updateGeneratedCount() {
+  document.getElementById('statusRight').textContent = `${generatedCount} / 6 generated`;
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('generateAllBtn').disabled = true;
+});
+</script>
+</body>
+</html>
